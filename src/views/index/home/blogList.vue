@@ -27,8 +27,8 @@
               <div class="meta-container">
                 <span class="meta-container-author">{{ item.created_by_name }}</span>
                 <span class="meta-container-date">{{ formtDate(item.created_at) }}</span>
-                <a-tag v-show="item.article_type_name" :color="getColor(item)">
-                  {{ item.article_type_name }}
+                <a-tag v-show="item" v-for="(item, index) in JSON.parse(item.tags)" :key="index" :color="colors[index]">
+                  {{ item }}
                 </a-tag>
               </div>
               <div class="meta-brief">{{ item.brief }}</div>
@@ -82,18 +82,6 @@ export default {
     }
   },
   methods: {
-    getColor(item) {
-      switch (item.article_type_name) {
-        case '原创':
-          return this.colors[0];
-        case '转载':
-          return this.colors[1];
-        case '翻译':
-          return this.colors[2];
-        default:
-          return '';
-      }
-    },
     getSurface(url) {
       var downloadUrl = sp.getDownloadUrl(url);
       if (sp.isNullOrEmpty(downloadUrl)) {
