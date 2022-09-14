@@ -17,7 +17,7 @@ var originHttp = {
 window.sp = Object.assign({}, common, http, originHttp, spExtension);
 window.uuid = Object.assign({}, uuid);
 
-axios.defaults.baseURL = process.env.VUE_APP_AXIOS_BASE_URL;
+axios.defaults.baseURL = process.env.VUE_APP_AXIOS_BASE_URL || window.location.origin;
 axios.defaults.timeout = 20000;
 axios.defaults.withCredentials = true;
 axios.interceptors.request.use(async config => {
