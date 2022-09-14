@@ -12,7 +12,6 @@ const cdn = {
   ],
   js: [
     'https://cdn.jsdelivr.net/npm/moment@2.29.1/moment.min.js',
-    'https://cdn.jsdelivr.net/npm/moment@2.29.1/dist/locale/zh-cn.js',
     'https://cdn.jsdelivr.net/npm/marked@2.1.3/marked.min.js',
     'https://cdn.jsdelivr.net/npm/echarts@5.3.1/dist/echarts.min.js',
     'https://cdn.jsdelivr.net/npm/wangeditor@4.7.8/dist/wangEditor.min.js',
