@@ -70,7 +70,7 @@
 
 <script>
 import { saveAuth, clearAuth, thirdPartyLogin } from '../../lib/login.js';
-import { encrypt } from '@sixpence/web-core';
+import { encrypt } from '@sixpence/js-utils';
 
 var header = process.env.VUE_APP_TITLE;
 

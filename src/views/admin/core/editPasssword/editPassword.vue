@@ -20,7 +20,7 @@
 </template>
 
 <script>
-import { encrypt } from '@sixpence/web-core';
+import { encrypt } from '@sixpence/js-utils';
 
 export default {
   name: 'edit-password',

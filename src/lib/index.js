@@ -1,4 +1,4 @@
-import { common, http, uuid } from '@sixpence/web-core';
+import { common, http, uuid } from '@sixpence/js-utils';
 import store from '../store';
 import axios from 'axios';
 import './jigsaw';
