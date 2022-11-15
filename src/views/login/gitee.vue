@@ -25,7 +25,7 @@ export default {
       var param = {
         third_party_login: {
           param: code,
-          type: 1
+          type: 'Gitee'
         }
       };
       sp.post('/api/system/login', param).then(resp => {

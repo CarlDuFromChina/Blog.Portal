@@ -28,7 +28,7 @@ export default {
       var param = {
         third_party_login: {
           param: code,
-          type: 0
+          type: 'Github'
         }
       };
       sp.post('/api/system/login', param).then(resp => {
