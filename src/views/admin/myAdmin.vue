@@ -1,14 +1,21 @@
 <template>
   <admin ref="admin">
-    <a-button class="button-back" icon="rollback" @click="goIndex">主页</a-button>
-    <a-button type="primary" icon="edit" @click="writeBlog" style="margin-right:20px;" v-show="blogPrivilege.create">写博客</a-button>
+    <a-button class="button-back" icon="rollback" @click="$router.push({ name: 'index' })">主页</a-button>
+    <div class="admin-nav-actions">
+      <sp-icon name="sp-blog-tools" :size="18" tooltip="网页在线小工具" @click="openExternalLink('OnlineTool')"></sp-icon>
+      <sp-icon name="sp-blog-wechat" :size="18" tooltip="微信平台" @click="openExternalLink('WeChatPlatform')"></sp-icon>
+      <sp-icon name="sp-blog-extricator" :size="18" tooltip="Extricator" @click="openExternalLink('Extricator')"></sp-icon>
+      <sp-icon name="sp-blog-portainer" :size="18" tooltip="Portainer" @click="openExternalLink('Portainer')"></sp-icon>
+    </div>
     <!-- 悬浮菜单 -->
     <div class="hover-menu">
       <a-dropdown>
         <a-menu slot="overlay">
-          <a-menu-item key="1" @click="writeIdea" v-show="ideaPrivilege.create">创建想法</a-menu-item>
+          <a-menu-item key="1" @click="$router.push({ name: 'idea' })" v-show="ideaPrivilege.create">新建想法</a-menu-item>
+          <a-menu-item key="2" @click="$router.push({ name: 'readingNoteEdit' })" v-show="readingNotePrivilege.create">新建读书笔记</a-menu-item>
+          <a-menu-item key="3" @click="$router.push({ name: 'postEdit' })" v-show="blogPrivilege.create">新建博客</a-menu-item>
         </a-menu>
-        <a-button type="primary" size="large" icon="edit" shape="circle" @click="writeBlog" v-show="blogPrivilege.create"></a-button>
+        <a-button type="primary" size="large" icon="edit" shape="circle"></a-button>
       </a-dropdown>
     </div>
     <!-- 悬浮菜单 -->
@@ -24,15 +31,19 @@ export default {
   data() {
     return {
       blogPrivilege: {},
-      ideaPrivilege: {}
+      ideaPrivilege: {},
+      readingNotePrivilege: {},
+      sites: {}
     };
   },
   created() {
-    sp.get('api/post/privilege').then(resp => {
-      this.blogPrivilege = resp;
-    });
-    sp.get('api/idea/privilege').then(resp => {
-      this.ideaPrivilege = resp;
+    sp.get('api/post/privilege').then(resp => this.blogPrivilege = resp);
+    sp.get('api/idea/privilege').then(resp => this.ideaPrivilege = resp);
+    sp.get('api/reading_note/privilege').then(resp => this.readingNotePrivilege = resp);
+    sp.get('api/external_site/sites').then(resp => {
+      resp.forEach(item => {
+        this.sites[item.Name] = item.Value;
+      })
     });
   },
   methods: {
@@ -46,15 +57,9 @@ export default {
         name: 'index'
       });
     },
-    writeBlog() {
-      this.$router.push({
-        name: 'postEdit'
-      });
-    },
-    writeIdea() {
-      this.$router.push({
-        name: 'idea'
-      });
+    openExternalLink(name) {
+      if (this.sites[name])
+        window.open(this.sites[name], '_blank');
     }
   }
 };

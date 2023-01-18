@@ -1,8 +1,10 @@
 <template>
   <div class="svg-icon" @click="click" :style="{ 'cursor': cursor }">
-    <svg :width="size" :height="size" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" aria-hidden="true">
-      <use :xlink:href="'#' + name" :fill="color" />
-    </svg>
+    <a-tooltip :title="tooltip">
+      <svg :width="size" :height="size" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" aria-hidden="true">
+        <use :xlink:href="'#' + name" :fill="color" />
+      </svg>
+    </a-tooltip>
   </div>
 </template>
 
@@ -28,6 +30,9 @@ export default {
     cursor: {
       type: String,
       default: 'default'
+    },
+    tooltip: {
+      type: String
     }
   },
   methods: {

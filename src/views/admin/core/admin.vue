@@ -1,6 +1,8 @@
 <template>
   <a-layout class="layout-home">
+    <!--侧边栏左-->
     <a-layout-sider breakpoint="lg" collapsed-width="0">
+      <!--菜单栏-->
       <div class="sider">
         <a-menu theme="dark" mode="inline" :open-keys="openKeys" @openChange="onOpenChange">
           <a-sub-menu v-for="(item, index) in menus" :key="index">
@@ -14,9 +16,13 @@
         </a-menu>
       </div>
     </a-layout-sider>
+    <!--侧边栏右-->
     <a-layout>
+      <!--导航栏-->
       <a-layout-header :style="{ background: '#fff', padding: '0 20px 0 0', textAlign: 'right' }">
+        <!--自定义按钮-->
         <slot></slot>
+        <!--用户头像-->
         <a-dropdown>
           <a-menu slot="overlay">
             <a-menu-item key="1" @click="() => this.$router.push({ name: 'notification' })"
@@ -30,12 +36,14 @@
           </a-badge>
         </a-dropdown>
       </a-layout-header>
+      <!--内容区域-->
       <a-layout-content :style="{ margin: '24px 16px', overflow: 'hidden' }">
         <div :style="{ background: '#fff', height: '100%' }">
           <router-view :key="$route.path"></router-view>
         </div>
       </a-layout-content>
     </a-layout>
+    <!--用户模态窗-->
     <a-modal v-model="userInfoEditVisible" title="编辑" @ok="saveUserInfo" width="60%" okText="确认" cancelText="取消">
       <user-info-edit ref="userInfoEdit" :related-attr="userParam" @close="userInfoEditVisible = false"></user-info-edit>
     </a-modal>
