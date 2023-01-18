@@ -20,6 +20,8 @@ window.uuid = Object.assign({}, uuid);
 axios.defaults.baseURL = process.env.VUE_APP_AXIOS_BASE_URL || window.location.origin;
 axios.defaults.timeout = 20000;
 axios.defaults.withCredentials = true;
+axios.defaults.headers.post['Content-Type'] = 'application/json';
+axios.defaults.headers.put['Content-Type'] = 'application/json';
 axios.interceptors.request.use(async config => {
   await checkToken();
   config.headers.Authorization = `Bearer ${store.getters.getToken}`;
