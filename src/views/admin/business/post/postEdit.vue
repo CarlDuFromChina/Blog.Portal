@@ -3,8 +3,8 @@
     <div class="blog-header">
       <a-button icon="rollback" @click="goBack">返回</a-button>
       <a-button icon="check" type="primary" @click="editVisible = true">提交</a-button>
-      <a-button icon="sync" type="primary" @click="syncBlog('wechat')" :disabled="!id">同步到微信</a-button>
-      <a-button icon="sync" type="primary" @click="syncBlog('juejin')" :disabled="!id">同步到掘金</a-button>
+      <a-button icon="sync" type="primary" @click="syncBlog('wechat')" :disabled="!data.id">同步到微信</a-button>
+      <a-button icon="sync" type="primary" @click="syncBlog('juejin')" :disabled="!data.id">同步到掘金</a-button>
       <a-popover v-if="showAutoSave">
         <template slot="content">
           <p>{{ saveStatus.text }}</p>
