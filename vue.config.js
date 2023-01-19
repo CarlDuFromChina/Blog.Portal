@@ -46,6 +46,9 @@ module.exports = {
     }
   },
   configureWebpack: {
+    output: {
+      filename: '[name].[hash].js'
+    },
     externals: isProd ? cdn.externals : [],
     plugins: [
       new CompressionPlugin({
