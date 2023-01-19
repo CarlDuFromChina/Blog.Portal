@@ -44,20 +44,28 @@ export default {
     window.clearInterval(this.secondId); // 销毁倒计时事件
   },
   async mounted() {
+    // 是否开启草稿功能
     const enable = await sp.get(`/api/sys_config/value?code=${this.configCode}`);
-
     if (enable === 'true' || enable === true) { 
-      // 1、从草稿列表页进入编辑页面
-      // 2、新创建的博客
-      // 3、编辑博客
-      if (!sp.isNullOrEmpty(this.$route.params.draftId)) {
-        await this.popDraft(this.$route.params.draftId); // 打开草稿
-        this.$emit('open-watch');
-      } else if (this.pageState === 'create') {
-        this.$emit('open-watch');
-      } else {
-        await this.getDraft(); // 获取草稿
-      }
+      this.$nextTick(async () => {
+        // 1、从草稿列表页进入编辑页面
+        // 2、新创建的博客
+        // 3、编辑博客
+        if (!sp.isNullOrEmpty(this.$route.params.draftId)) {
+          await this.popDraft(this.$route.params.draftId); // 打开草稿
+          this.$emit('open-watch');
+        } else if (this.pageState === 'create') {
+          this.$emit('open-watch');
+        } else {
+          var draft = await sp.get(`api/draft/post/${this.data.id}`);
+          if (draft) {
+            this.draft = draft;
+            this.restoreDraft()
+          } else {
+            this.$emit('open-watch');
+          }
+        }
+      })
     }
   },
   computed: {
@@ -85,36 +93,24 @@ export default {
     /**
      * 获取草稿
      **/
-    async getDraft() {
-      return sp.get(`api/draft/post/${this.data.id}`).then(resp => {
-        if (resp) {
-          this.draft = resp;
-          this.$confirm({
-            title: '是否恢复?',
-            content: '发现您尚未保存该博客，是否恢复上次备份内容？',
-            okText: '恢复',
-            cancelText: '取消',
-            onOk: () => {
-              const { postid, content, title } = resp;
-              this.data.id = postid;
-              this.data.content = content;
-              this.data.title = title;
-              sp.delete(`/api/draft/${this.draft.id}`)
-                .finally(() => {
-                  this.$emit('open-watch');
-                });
-            },
-            onCancel: () => {
-              sp.delete(`/api/draft/${this.draft.id}`).then(() => {
-                this.$message.info('已删除草稿');
-              })
-                .finally(() => {
-                  this.$emit('open-watch');
-                });
-            }
-          });
-        } else {
-          this.$emit('open-watch');
+    restoreDraft() {
+      this.$confirm({
+        title: '是否恢复?',
+        content: '发现您尚未保存该博客，是否恢复上次备份内容？',
+        okText: '恢复',
+        cancelText: '取消',
+        onOk: () => {
+          const { postid, content, title } = this.draft;
+          this.data.id = postid;
+          this.data.content = content;
+          this.data.title = title;
+          sp.delete(`/api/draft/${this.draft.id}`)
+            .finally(() => this.$emit('open-watch'));
+        },
+        onCancel: () => {
+          sp.delete(`/api/draft/${this.draft.id}`)
+            .then(() => this.$message.info('已删除草稿'))
+            .finally(() => this.$emit('open-watch'));
         }
       });
     },
