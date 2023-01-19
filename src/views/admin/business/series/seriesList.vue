@@ -28,7 +28,7 @@
 import postEdit from '../post/postEdit';
 
 export default {
-  name: 'blog-list',
+  name: 'series-list',
   data() {
     return {
       controllerName: 'post',
@@ -85,7 +85,7 @@ export default {
     goEdit(item) {
       this.$router.push({
         name: `postEdit`,
-        params: { id: item.id }
+        params: { id: item?.id }
       });
     }
   }

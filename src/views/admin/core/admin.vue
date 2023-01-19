@@ -1,10 +1,15 @@
 <template>
   <a-layout class="layout-home">
     <!--侧边栏左-->
-    <a-layout-sider breakpoint="lg" collapsed-width="0">
+    <a-layout-sider v-model="collapsed" :trigger="null" :width="240" collapsible>
+      <!--LOGO-->
+      <div class="logo" @click="$router.push({ name: 'workplace' })">
+        <sp-icon name="sp-blog-leaf" :size="32"></sp-icon>
+        <span v-if="!collapsed">Sixpence Blog</span>
+      </div>
       <!--菜单栏-->
       <div class="sider">
-        <a-menu theme="dark" mode="inline" :open-keys="openKeys" @openChange="onOpenChange">
+        <a-menu theme="dark" mode="inline" :open-keys="openKeys" @openChange="onOpenChange" :inlineIndent="24">
           <a-sub-menu v-for="(item, index) in menus" :key="index">
             <span slot="title">
               <a-icon :type="item.icon" /><span>{{ item.title }}</span>
@@ -20,6 +25,13 @@
     <a-layout>
       <!--导航栏-->
       <a-layout-header :style="{ background: '#fff', padding: '0 20px 0 0', textAlign: 'right' }">
+        <!--左侧信息版-->
+        <a-icon
+          class="trigger"
+          :type="collapsed ? 'menu-unfold' : 'menu-fold'"
+          :style="{float:'left'}"
+          @click="() => (collapsed = !collapsed)"
+        />
         <!--自定义按钮-->
         <slot></slot>
         <!--用户头像-->
@@ -59,6 +71,7 @@ export default {
   components: { userInfoEdit },
   data() {
     return {
+      collapsed: false,
       menus: [],
       defaultOpenedsArray: [],
       openKeys: [],
@@ -160,6 +173,25 @@ html {
 }
 </style>
 <style lang="less" scoped>
+.trigger {
+  font-size: 18px;
+  line-height: 64px;
+  padding: 0 24px;
+  cursor: pointer;
+  transition: color 0.3s;
+}
+.logo {
+  height: 32px;
+  margin: 12px 24px;
+  overflow: hidden;
+  cursor: pointer;
+  > span {
+    color: #fff;
+    font-size: 20px;
+    font-weight: 600;
+    margin-left: 12px;
+  }
+}
 .layout-home {
   height: 100%;
   overflow: hidden;
