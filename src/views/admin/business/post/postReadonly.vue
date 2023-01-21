@@ -203,9 +203,6 @@ export default {
   },
   async created() {
     await this.loadData();
-    if (this.data.title) {
-      document.title = this.data.title;
-    }
     this.user = await sp.get(`api/user_info/${this.data.created_by}`);
     if (this.isLoggedIn) {
       this.isUp = await sp.get(`api/upvote/is_up?objectid=${this.data.id}`);

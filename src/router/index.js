@@ -23,9 +23,6 @@ NProgress.configure({ showSpinner: false });
 
 router.beforeEach((to, from, next) => {
   NProgress.start();
-  if (to.meta.title) {
-    document.title = to.meta.title;
-  }
   if (to.matched.some(m => m.meta.auth)) {
     if (store.getters.isLoggedIn) {
       next();

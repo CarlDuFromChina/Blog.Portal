@@ -40,3 +40,5 @@ if (window.device.mobile()) {
     template: '<App/>'
   });
 }
+
+document.title = 'Sixpence Blog';

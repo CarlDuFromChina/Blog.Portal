@@ -24,7 +24,8 @@ export default {
     };
   },
   created() {
-    sp.get('api/link/search').then(resp => {
+    const searchList = [{ Name: 'link_type', Value: 'github', Type: 0 }];
+    sp.get(`api/link/search?searchList=${JSON.stringify(searchList)}`).then(resp => {
       this.items = resp.DataList;
       setTimeout(() => {
         this.loading = false;
