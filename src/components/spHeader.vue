@@ -2,7 +2,7 @@
   <div class="header">
     <a-breadcrumb style="line-height:60px;margin-left:10px;">
       <a-breadcrumb-item href="">
-        <a-icon type="home" />
+        <a-icon type="home" @click="$router.push({ name: 'workplace' })"/>
       </a-breadcrumb-item>
       <a-breadcrumb-item href="">
         <span>{{ $route.meta.title }}</span>

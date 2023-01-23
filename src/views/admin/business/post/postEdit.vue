@@ -174,12 +174,47 @@ export default {
       }
     };
   },
-  created() {
-    this.$on('open-watch', () => this.openWatch());
+  async created() {
+    this.$on('open-watch', () => {
+      this.unwatch = this.$watch('data', () => {
+          // 倒计时保存草稿
+          if (!this.isDirty) {
+            this.isDirty = true;
+            this.saveStatusValue = 'wait';
+            this.secondId = setInterval(() => {
+              if (this.seconds === 0) {
+                this.saveDraft();
+              } else {
+                this.seconds -= 1;
+                this.statusList[0].text = `${this.seconds}秒后备份`;
+              }
+            }, 1000);
+          }
+        },
+        {
+          deep: true
+        }
+      );
+    });
+
+    var draftid = this.$route.params.draftId;
+    if (!sp.isNullOrEmpty(draftid)) {
+      var resp = await sp.get(`api/draft/${draftid}`);
+      this.draft = resp;
+      const { content, title } = resp;
+      this.data.id = draftid;
+      this.data.content = content;
+      this.data.title = title;
+      this.$emit('open-watch');
+    }
   },
   beforeDestroy() {
-    this.closeWatch();
-    window.clearInterval(this.secondId); // 销毁倒计时事件
+    if (this.unwatch && typeof this.unwatch === 'function') {
+      this.unwatch();
+    }
+    if (this.secondId) {
+      window.clearInterval(this.secondId);
+    }
   },
   computed: {
     // 请求头
@@ -249,16 +284,8 @@ export default {
         this.tags = this.data.tags;
       }
 
-       // 是否开启草稿功能
-    const enable = await sp.get(`/api/sys_config/value?code=${this.configCode}`);
-    if (enable === 'true' || enable === true) { 
-        // 1、从草稿列表页进入编辑页面
-      // 2、新创建的博客
-      // 3、编辑博客
-      if (!sp.isNullOrEmpty(this.$route.params.draftId)) {
-        await this.popDraft(this.$route.params.draftId); // 打开草稿
-        this.$emit('open-watch');
-      } else if (this.pageState === 'create') {
+      // true 创建博客，false 查找是否有草稿需要恢复
+      if (this.pageState === 'create') {
         this.$emit('open-watch');
       } else {
         var draft = await sp.get(`api/draft/post/${this.data.id}`);
@@ -269,7 +296,6 @@ export default {
           this.$emit('open-watch');
         }
       }
-    }
     },
     beforeUpload() {
       return false;
@@ -365,19 +391,6 @@ export default {
         });
       }
     },
-      /**
-     * 打开草稿
-     * @param {String} id - 博客id
-     */
-     async popDraft(id) {
-      return sp.get(`api/draft/${id}`).then(resp => {
-        this.draft = resp;
-        const { content, title } = resp;
-        this.data.id = id;
-        this.data.content = content;
-        this.data.title = title;
-      });
-    },
     /**
      * 获取草稿
      **/
@@ -425,39 +438,6 @@ export default {
           this.seconds = 60;
           clearInterval(this.secondId);
         });
-    },
-    /**
-     * 监听页面是否修改
-     */
-    openWatch() {
-      this.unwatch = this.$watch(
-        'data',
-        (newVal, oldVal) => {
-          console.log(newVal, oldVal);
-          // 倒计时保存草稿
-          if (!this.isDirty) {
-            debugger;
-            this.isDirty = true;
-            this.saveStatusValue = 'wait';
-            this.secondId = setInterval(() => {
-              if (this.seconds === 0) {
-                this.saveDraft();
-              } else {
-                this.seconds -= 1;
-                this.statusList[0].text = `${this.seconds}秒后备份`;
-              }
-            }, 1000);
-          }
-        },
-        {
-          deep: true
-        }
-      );
-    },
-    closeWatch() {
-      if (this.unwatch && typeof this.unwatch === 'function') {
-        this.unwatch();
-      }
     },
     /**
      * 返回前检查

@@ -38,6 +38,12 @@ export default {
         return;
       }
       this.loading = true;
+      if (this.preLoad && typeof this.preLoad === 'function') {
+        var flag = await this.preLoad();
+        if (!flag) {
+          return;
+        }
+      }
       try {
         this.data = await sp.get(`api/${this.controllerName}/${this.data.id}`);
         if (this.loadComplete && typeof this.loadComplete === 'function') {

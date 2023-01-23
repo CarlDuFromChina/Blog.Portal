@@ -30,9 +30,14 @@ function getUserId() {
   return store.getters.getUserId;
 }
 
+function isTrue(val) {
+  return val === 'true' || val === true;
+}
+
 export default {
   getServerUrl,
   getDownloadUrl,
   getAvatar,
-  getUserId
+  getUserId,
+  isTrue
 };

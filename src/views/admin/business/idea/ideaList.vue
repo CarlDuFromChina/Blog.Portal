@@ -17,7 +17,7 @@
           <div slot="description" v-html="item.content"></div>
         </a-list-item-meta>
         <div style="padding-left: 20px">
-          <a-button type="primary" icon="edit" @click="edit(item.id)"></a-button>
+          <a-button type="primary" icon="edit" @click="edit(item.id)" :style="{'margin-right': '8px'}"></a-button>
           <a-button type="danger" icon="delete" @click="deleteData(item.id)"></a-button>
         </div>
       </a-list-item>
