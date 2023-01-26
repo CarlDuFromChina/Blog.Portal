@@ -111,10 +111,11 @@ export default {
       window.open(href, '_blank');
     },
     goEdit(item) {
-      this.$router.push({
+      var router = this.$router.resolve({
         name: 'postEdit',
         params: { id: (item || {}).id || '' }
       });
+      window.open(router.href, '_blank')
     },
     exportData() {
       const selectionIds = this.$refs.list.selectionIds;

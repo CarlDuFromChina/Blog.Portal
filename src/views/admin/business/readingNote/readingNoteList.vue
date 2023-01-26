@@ -30,7 +30,10 @@ export default {
   methods: {
     goEdit(item) {
       this.$router.push({
-        path: `readingNote/edit/${(item || {}).id || ''}`
+        name: 'readingNoteEdit',
+        params: {
+          id: item.id
+        }
       });
     },
     goReadonly(item) {

@@ -1,21 +1,49 @@
 <template>
   <div class="blog blog__edit">
-    <div class="blog-header">
-      <a-button icon="rollback" @click="goBack">返回</a-button>
-      <a-button icon="check" type="primary" @click="editVisible = true">提交</a-button>
-      <a-button icon="sync" type="primary" @click="syncBlog('wechat')" :disabled="!data.id">同步到微信</a-button>
-      <a-button icon="sync" type="primary" @click="syncBlog('juejin')" :disabled="!data.id">同步到掘金</a-button>
-      <a-popover v-if="showAutoSave">
-        <template slot="content">
-          <p>{{ saveStatus.text }}</p>
-        </template>
-        <a-button :icon="saveStatus.icon" type="dashed" @click="saveDraft" :style="{ color: saveStatus.color }"> </a-button>
-      </a-popover>
-    </div>
     <div class="blog-body">
       <div class="blog-bodywrapper">
         <div class="blog-bodywrapper-markdown">
-          <mavon-editor v-model="data.content" ref="md" @imgAdd="imgAdd" @change="change" @save="editVisible = true" />
+          <mavon-editor
+            v-model="data.content"
+            ref="editor"
+            :toolbars="toolbar"
+            @imgAdd="imgAdd"
+            @change="change"
+            @save="editVisible = true"
+          >
+            <!-- 左工具栏前加入自定义按钮 -->
+            <template slot="right-toolbar-before">
+              <a-popover v-if="showAutoSave">
+                <template slot="content">
+                  <p>{{ saveStatus?.text }}</p>
+                </template>
+                <a-icon
+                  :type="saveStatus?.icon"
+                  :spin="saveStatusValue === 'wait'"
+                  :style="{ color: saveStatus?.color, paddingRight: '12px' }"
+                  @click="saveDraft">
+                </a-icon>
+              </a-popover>
+              <sp-icon
+                name="sp-blog-wechat"
+                :size="14"
+                tooltip="同步到微信"
+                @click="syncBlog('wechat')"
+                style="cursor: pointer;padding-right: 12px;"
+                v-show="data.id"
+              >
+              </sp-icon>
+              <sp-icon
+                name="sp-blog-juejin"
+                :size="14"
+                tooltip="同步到掘金"
+                @click="syncBlog('juejin')"
+                style="cursor: pointer;padding-right: 12px;"
+                v-show="data.id"
+              >
+              </sp-icon>
+            </template>
+          </mavon-editor>
         </div>
       </div>
     </div>
@@ -120,6 +148,7 @@
 import { edit, select } from '@/mixins';
 import JueJin from './sync/juejin.vue';
 import { htmlToText } from 'html-to-text';
+import { toolbar } from './mavon';
 
 export default {
   name: 'post-edit',
@@ -127,6 +156,7 @@ export default {
   components: { JueJin },
   data() {
     return {
+      toolbar,
       draft: {},
       isDirty: false,
       seconds: 60,
@@ -136,7 +166,7 @@ export default {
       statusList: [
         {
           value: 'wait',
-          icon: 'redo',
+          icon: 'sync',
           text: '60秒后备份',
           color: '#000000a6'
         },
@@ -208,12 +238,25 @@ export default {
       this.$emit('open-watch');
     }
   },
-  beforeDestroy() {
-    if (this.unwatch && typeof this.unwatch === 'function') {
-      this.unwatch();
-    }
-    if (this.secondId) {
-      window.clearInterval(this.secondId);
+  mounted() {
+    // 全屏显示
+    var editorVM = this.$refs.editor;
+    editorVM.s_fullScreen = true;
+    editorVM.fullscreen(true, editorVM.d_value);
+
+    // 关闭检查
+    window.onbeforeunload = (e) => {
+      e = e || window.event;
+      if (e) {
+        e.returnValue = '关闭提示';
+      }
+      if (this.unwatch && typeof this.unwatch === 'function') {
+        this.unwatch();
+      }
+      if (this.secondId) {
+        window.clearInterval(this.secondId);
+      }
+      return '关闭提示';
     }
   },
   computed: {
@@ -344,20 +387,13 @@ export default {
           try {
             await sp.post('api/post/save', this.data);
             this.$message.success('发布成功！');
-            this.$router.back();
+            window.onbeforeunload = null;
+            this.$router.push({ name: 'post', params: { id: this.data.id } });
           } catch (error) {
             this.$message.error(error);
           }
         }
       });
-    },
-    // 返回上页
-    goBack() {
-      if (this.preBack && typeof this.preBack === 'function') {
-        this.preBack(() => this.saveData());
-      } else {
-        this.$router.back();
-      }
     },
     changeTags(val) {
       this.tags = val;
@@ -438,28 +474,6 @@ export default {
           this.seconds = 60;
           clearInterval(this.secondId);
         });
-    },
-    /**
-     * 返回前检查
-     */
-    preBack() {
-      if (!this.isDirty) {
-        this.$router.back();
-        return;
-      }
-      this.$confirm({
-        title: '是否保存修改?',
-        content: '检测到未保存的内容，是否在离开页面前保存修改？',
-        okText: '保存',
-        cancelText: '取消',
-        onOk: () => {
-          this.editVisible = true;
-          this.$nextTick(() => this.save());
-        },
-        onCancel: () => {
-          this.$router.back();
-        }
-      });
     }
   }
 };
@@ -467,7 +481,7 @@ export default {
 
 <style lang="less" scoped>
 @import 'post.less';
-/deep/ .v-note-wrapper {
+/deep/ .v-note-wrapper.fullscreen {
   z-index: 100;
 }
 </style>

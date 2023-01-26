@@ -18,12 +18,13 @@ export default {
   },
   methods: {
     goEdit(item) {
-      this.$router.push({
-        name: 'postEdit',
+      var router = this.$router.resolve({
+        name: 'draft',
         params: {
           draftId: item.id
         }
       });
+      window.open(router.href, '_blank')
     }
   }
 };

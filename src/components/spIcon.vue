@@ -43,12 +43,15 @@ export default {
 };
 </script>
 
-<style>
+<style lang="less">
 .svg-icon {
   fill: currentColor;
   overflow: hidden;
   display: inline-block;
   vertical-align: middle;
   vertical-align: middle;
+  & > svg:focus {
+    outline: none;
+  }
 }
 </style>

@@ -1,7 +1,13 @@
 export default [
   {
-    path: '/admin/postEdit',
+    path: '/admin/editor/post/:id?',
     name: 'postEdit',
+    component: () => import('./postEdit'),
+    meta: { title: '博客编辑' }
+  },
+  {
+    path: '/admin/editor/draft/:draftId?',
+    name: 'draft',
     component: () => import('./postEdit')
   },
   {

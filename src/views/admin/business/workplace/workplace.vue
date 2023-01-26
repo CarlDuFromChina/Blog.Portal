@@ -13,7 +13,17 @@
     <div class="content">
       <div class="section">
         <p class="section-title">贡献</p>
-        <div id="calendar" style="width: 100%; height: 200px"></div>
+        <a-tabs
+          v-model="selectedYear"
+          :default-active-key="currentYear"
+          tab-position="left"
+          :style="{ height: '200px' }"
+          @change="handleYearChanged"
+        >
+          <a-tab-pane v-for="item in years" :key="item" :tab="`${item}`">
+            <div :id="'calendar' + item" style="width: 800px; height: 200px" v-show="item === selectedYear"></div>
+          </a-tab-pane>
+        </a-tabs>
       </div>
       <div class="section">
         <p class="section-title">我的动态</p>
@@ -34,17 +44,23 @@ export default {
   name: 'workplace',
   data() {
     return {
+      selectedYear: this.$moment().year(),
       user_info: {},
-      timeline: []
+      timeline: [],
+      years: [],
+      currentYear: this.$moment().year(),
+      avatarUrl: `${sp.getServerUrl()}api/system/avatar/${sp.getUserId()}`
     };
   },
   created() {
     this.getUserInfo();
-    this.loadTimeline();
-    this.avatarUrl = `${sp.getServerUrl()}api/system/avatar/${sp.getUserId()}`;
+    for (let i = 0; i < 4; i++) {
+      this.years.push(this.currentYear - i)
+    }
   },
-  mounted() {
-    this.loadCalendar();
+  async mounted() {
+    this.timeline = await sp.get('api/analysis/timeline')
+    this.loadCalendar(this.currentYear);
   },
   computed: {
     welcome() {
@@ -70,7 +86,6 @@ export default {
       });
     },
     getVirtulData(year, activityData) {
-      year = year || '2017';
       var date = +echarts.number.parseDate(year + '-01-01');
       var end = +echarts.number.parseDate(year + '-12-31');
       var dayTime = 3600 * 24 * 1000;
@@ -81,11 +96,33 @@ export default {
       }
       return data;
     },
-    async loadCalendar() {
-      const el = document.getElementById('calendar');
-      const activityData = await sp.get('api/post/activity_records');
+    async loadCalendar(year) {
+      const el = document.getElementById(`calendar${year}`);
+      if (el.getAttribute('_echarts_instance_')) {
+        return;
+      }
       const myChart = echarts.init(el);
+
+      var activityData = []
+      var years = this.timeline
+        .filter(item => this.$moment(item.created_at).year() === year)
+        .map(item => this.$moment(item.created_at).format('YYYY-MM-DD'));
+      [...new Set(years)].forEach(item => {
+        activityData.push({
+          created_date: item,
+          count: years.filter(e => e === item).length
+        })
+      });
+      var count = activityData.reduce((pre, cur) => pre += cur.count, 0);
+
       var option = {
+        title: {
+          top: 0,
+          text: `${year} 年贡献了 ${count} 篇文章`,
+          textStyle: {
+            color: 'rgba(0, 0, 0, 0.65) '
+          }
+        },
         visualMap: {
           show: false,
           min: 0,
@@ -96,6 +133,7 @@ export default {
         },
         backgroundColor: '#fff',
         calendar: {
+          left: 'left',
           cellSize: [14, 14],
           itemStyle: {
             borderColor: '#fff',
@@ -105,20 +143,20 @@ export default {
             show: false
           },
           yearLabel: { show: false },
-          range: this.$moment()
-            .year()
-            .toString()
+          range: year
         },
         series: {
           type: 'heatmap',
           coordinateSystem: 'calendar',
-          data: this.getVirtulData(this.$moment().year(), activityData)
+          data: this.getVirtulData(year, activityData)
         }
       };
       myChart.setOption(option);
     },
-    async loadTimeline() {
-      this.timeline = await sp.get('api/analysis/timeline');
+    handleYearChanged(year) {
+      this.$nextTick(() => {
+        this.loadCalendar(year);
+      });
     }
   }
 };

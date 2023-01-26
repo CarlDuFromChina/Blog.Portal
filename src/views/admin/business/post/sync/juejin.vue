@@ -13,7 +13,7 @@
       </a-row>
     </a-form-model>
     <span slot="footer" class="dialog-footer">
-      <a-button @click="visible = false">取 消</a-button>
+      <a-button @click="closeDialog">取 消</a-button>
       <a-button type="primary" @click="handleOk" :loading="loading">确 定</a-button>
     </span>
   </a-modal>
@@ -78,6 +78,10 @@ export default {
         }
         this.loading = false;
       });
+    },
+    closeDialog() {
+      this.visible = false;
+      this.$message.info('已取消');
     }
   }
 }

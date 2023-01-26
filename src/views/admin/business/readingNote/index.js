@@ -6,7 +6,7 @@ export default [
     meta: { title: '阅读笔记' }
   },
   {
-    path: '/admin/readingNote/edit/:id?',
+    path: '/admin/editor/reading/:id?',
     name: 'readingNoteEdit',
     component: () => import('./readingNoteEdit'),
     meta: { title: '阅读笔记 / 编辑' }
