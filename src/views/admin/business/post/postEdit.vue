@@ -211,6 +211,9 @@ export default {
           if (!this.isDirty) {
             this.isDirty = true;
             this.saveStatusValue = 'wait';
+            if (this.secondId) {
+              window.clearInterval(this.secondId);
+            }
             this.secondId = setInterval(() => {
               if (this.seconds === 0) {
                 this.saveDraft();

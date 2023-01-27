@@ -3,12 +3,6 @@
     <sp-card class="blog-list" :loading="firstLoading">
       <a-list item-layout="vertical" size="large" :data-source="listData">
         <a-list-item slot="renderItem" :key="item.id" slot-scope="item">
-          <template slot="actions">
-            <span :key="'eye'">
-              <a-icon type="eye" style="margin-right: 8px" />
-              {{ item.reading_times }}
-            </span>
-          </template>
           <img :src="getSurface(item.surface_url)" slot="extra" class="blog_pic" />
           <a-list-item-meta :description="item.description">
             <span slot="title" style="font-size: 14px">
@@ -17,8 +11,11 @@
                 <a @click="readBlog(item)">{{ item.title }}</a>
               </div>
               <div class="meta-container">
-                <span class="meta-container-author">{{ item.created_by_name }}</span>
                 <span class="meta-container-date">{{ formtDate(item.created_at) }}</span>
+                <span class="meta-container-view">
+                  <a-icon type="eye" style="margin-right:4px"/>
+                  <span>{{ item.reading_times }}</span>
+                </span>
                 <a-tag v-show="item" v-for="(item, index) in JSON.parse(item.tags)" :key="index" :color="colors[index]">
                   {{ item }}
                 </a-tag>
@@ -136,11 +133,13 @@ export default {
 .meta-container {
   color: #86909c;
   font-size: 13px;
-  &-author {
-    color: #4e5969;
-  }
   &-date {
     position: relative;
+  }
+  &-view {
+    position: relative;
+    color: rgba(0, 0, 0, 0.45);
+    font-size: 14px;
     padding: 0 12px;
     &::before {
       position: absolute;
