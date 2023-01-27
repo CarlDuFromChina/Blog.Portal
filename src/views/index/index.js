@@ -23,6 +23,11 @@ export default [
         path: '/index/messageRemind',
         name: 'messageRemind',
         component: () => import('./messageRemind/index.vue')
+      },
+      {
+        path: '/index/guidelines',
+        name: 'guidelines',
+        component: () => import('./guidelines')
       })
   }
 ];
