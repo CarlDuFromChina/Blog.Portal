@@ -41,4 +41,4 @@ if (window.device.mobile()) {
   });
 }
 
-document.title = 'Sixpence Blog';
+document.title = process.env.VUE_APP_TITLE;

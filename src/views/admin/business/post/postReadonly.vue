@@ -4,37 +4,19 @@
     <div class="blog-body" style="background-color: #e9ecef">
       <div class="bodyWrapper">
         <a-layout>
+          <!--左侧按钮：点赞、评论-->
           <a-layout-sider width="10%" theme="light" style="text-align: center">
-            <div class="toolbar">
+            <div class="toolbar" v-if="commentStrategy !== 'none'">
               <div class="toolbar-item">
-                <a-badge
-                  :count="data.upvote_times || 0"
-                  :number-style="{
-                    backgroundColor: isUp ? '#349dfe' : '#fff',
-                    color: isUp ? '#fff' : '#999',
-                    boxShadow: '0 0 0 1px #d9d9d9 inset'
-                  }"
-                >
-                  <a-icon type="like" :theme="isUp ? 'twoTone' : 'outlined'" @click="upvote"></a-icon>
-                </a-badge>
-              </div>
-              <div class="toolbar-item" v-show="showComment">
-                <a-badge
-                  :count="data.comment_count || 0"
-                  :number-style="{
-                    backgroundColor: '#fff',
-                    color: '#999',
-                    boxShadow: '0 0 0 1px #d9d9d9 inset'
-                  }"
-                >
-                  <a-icon type="message" @click="goCommentLocation"></a-icon>
-                </a-badge>
+                <a-icon type="message" @click="goCommentLocation"></a-icon>
               </div>
             </div>
           </a-layout-sider>
+          <!--右侧内容-->
           <a-layout-sider width="60%" theme="light">
             <a-card>
               <a-skeleton :loading="loading">
+                <!--标题、作者-->
                 <div class="block">
                   <div class="bodyWrapper-title">{{ data.title }}</div>
                   <div style="display: flex">
@@ -47,52 +29,36 @@
                     </div>
                   </div>
                 </div>
+                <!--封面图片-->
                 <img v-if="data.big_surface_url" :src="getDownloadUrl(data.big_surface_url)" class="bodyWrapper-background" />
+                <!--内容-->
                 <div id="blog_content" class="bodyWrapper-content">
                   <article v-highlight v-html="formatterContent" class="markdown-body" @click="handleImgClick($event)"></article>
                 </div>
               </a-skeleton>
             </a-card>
+            <!--标准评论组件-->
             <sp-comments
               id="comment"
-              v-show="showComment"
+              v-if="commentStrategy === 'default' && !data.disable_comment"
               :object-id="id"
               :data="data"
               :disabled="data.disable_comment"
               objectName="blog"
             ></sp-comments>
+            <!--disqus评论组件-->
+            <div id="comment">
+              <Disqus
+                :shortname="disqusShortName"
+                lang="zh-CN"
+                v-if="commentStrategy === 'disqus' && !data.disable_comment"
+                :style="{ marginTop: '32px'}"
+              >
+              </Disqus>
+            </div>
           </a-layout-sider>
+          <!--右侧目录栏-->
           <a-layout-sider width="30%" style="margin-left: 20px" theme="light">
-            <a-card class="block">
-              <div class="block-body">
-                <a-skeleton :loading="loading">
-                  <a class="block-author">
-                    <a-avatar :size="42" :src="getAvatar(data.created_by)" style="margin-right: 10px"></a-avatar>
-                    <div>
-                      <a>{{ user.name }}</a>
-                      <div style="color: #72777b; font-size: 12px; padding-top: 5px">{{ user.introduction }}</div>
-                    </div>
-                  </a>
-                  <div id="block-content" style="padding-top: 10px">
-                    <sp-icon name="sp-blog-zan" :size="25" style="padding-right: 10px"></sp-icon>
-                    <span>获得点赞 {{ data.upvote_times || 0 }}</span>
-                  </div>
-                  <div class="block-content">
-                    <sp-icon name="sp-blog-view" :size="25" style="padding-right: 10px"></sp-icon>
-                    <span>文章被阅读 {{ data.reading_times || 0 }}</span>
-                  </div>
-                </a-skeleton>
-              </div>
-            </a-card>
-            <a-card class="block recommand">
-              <div class="block-title">
-                <span>好文推荐</span>
-              </div>
-              <a class="item" v-for="(item, index) in recommandList" :key="index" @click="read(item)">
-                <div class="item-start">{{ item.name }}</div>
-              </a>
-              <a-empty style="padding: 1.5rem" v-if="!recommandList || recommandList.length === 0" />
-            </a-card>
             <div id="content" class="block catalog">
               <div style="font-size: 16px">目录</div>
             </div>
@@ -119,6 +85,7 @@
 import Vue from 'vue';
 import 'highlight.js/styles/atom-one-dark.css';
 import blogMenu from '../../../index/blogMenu.vue';
+import { Disqus } from 'vue-disqus';
 const marked = require('marked');
 
 const renderer = new marked.Renderer();
@@ -183,13 +150,12 @@ const tocObj = {
 
 export default {
   name: 'post',
-  components: { blogMenu },
+  components: { blogMenu, Disqus },
   data() {
     return {
       id: this.$route.params.id,
       controllerName: 'post',
       data: {},
-      recommandList: [],
       loading: false,
       formatterContent: '',
       user: {},
@@ -198,27 +164,18 @@ export default {
       getDownloadUrl: sp.getDownloadUrl,
       getAvatar: sp.getAvatar,
       previewImage: '',
-      previewVisible: false
+      previewVisible: false,
+      disqusShortName: process.env.VUE_APP_DISQUS_SHORTNAME,
+      commentStrategy: 'default'
     };
   },
   async created() {
     await this.loadData();
     this.user = await sp.get(`api/user_info/${this.data.created_by}`);
-    if (this.isLoggedIn) {
-      this.isUp = await sp.get(`api/upvote/is_up?objectid=${this.data.id}`);
-    }
-    this.loadRecommand();
+    this.commentStrategy = await sp.get('api/comments/comment_strategy')
   },
   mounted() {
     document.getElementById('blog').addEventListener('scroll', this.handleScroll);
-  },
-  computed: {
-    isLoggedIn() {
-      return this.$store.getters.isLoggedIn;
-    },
-    showComment() {
-      return this.$store.getters.getShowComment;
-    }
   },
   watch: {
     'data.content': {
@@ -272,17 +229,6 @@ export default {
     goCommentLocation() {
       document.getElementById('comment').scrollIntoView();
     },
-    loadRecommand() {
-      const searchList = [{ Name: 'recommend_type', Value: "url", Type: 0 }];
-      sp.get('api/recommend_info/search?pageSize=5&pageIndex=1&searchList=' + JSON.stringify(searchList)).then(resp => {
-        this.recommandList = resp.DataList;
-      });
-    },
-    read(item) {
-      sp.get(`api/recommend_info/reading_times?id=${item.id}`);
-      item.reading_times = (item.reading_times || 0) + 1;
-      window.open(item.url);
-    },
     handleScroll() {
       const content = document.getElementById('content');
       const blog = document.getElementById('blog');
@@ -314,19 +260,6 @@ export default {
           });
         }, 200);
       }
-    },
-    upvote() {
-      if (!this.$store.getters.isLoggedIn) {
-        this.$router.push({ name: 'login' });
-      }
-      sp.get(`/api/post/upvote?id=${this.id}`).then(resp => {
-        if (resp) {
-          this.$set(this.data, 'upvote_times', (this.data.upvote_times || 0) + 1);
-        } else {
-          this.$set(this.data, 'upvote_times', (this.data.upvote_times || 0) - 1);
-        }
-        this.isUp = resp;
-      });
     }
   }
 };

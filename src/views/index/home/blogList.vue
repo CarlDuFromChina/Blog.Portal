@@ -8,14 +8,6 @@
               <a-icon type="eye" style="margin-right: 8px" />
               {{ item.reading_times }}
             </span>
-            <span :key="'like-o'">
-              <a-icon type="like-o" style="margin-right: 8px" />
-              {{ item.upvote_times }}
-            </span>
-            <span :key="'message'" v-show="showComment">
-              <a-icon type="message" style="margin-right: 8px" />
-              {{ item.comment_count || 0 }}
-            </span>
           </template>
           <img :src="getSurface(item.surface_url)" slot="extra" class="blog_pic" />
           <a-list-item-meta :description="item.description">
@@ -75,11 +67,6 @@ export default {
         this.fetchData();
       }, 500);
     });
-  },
-  computed: {
-    showComment() {
-      return this.$store.getters.getShowComment;
-    }
   },
   methods: {
     getSurface(url) {

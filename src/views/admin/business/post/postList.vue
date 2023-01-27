@@ -111,10 +111,7 @@ export default {
       window.open(href, '_blank');
     },
     goEdit(item) {
-      var router = this.$router.resolve({
-        name: 'postEdit',
-        params: { id: (item || {}).id || '' }
-      });
+      var router = this.$router.resolve(`/admin/editor/post/${(item || {}).id || ''}`);
       window.open(router.href, '_blank')
     },
     exportData() {

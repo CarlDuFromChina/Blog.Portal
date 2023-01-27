@@ -71,9 +71,6 @@ export default {
         }
       });
     }
-    sp.get('api/sys_config/is_enable_comment').then(resp => {
-      this.$store.commit('updateShowComment', resp);
-    });
   },
   mounted() {
     window.addEventListener('scroll', this.scrollToTop, true);
