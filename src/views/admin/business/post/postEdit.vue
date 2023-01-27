@@ -237,6 +237,10 @@ export default {
       this.data.title = title;
       this.$emit('open-watch');
     }
+
+    if (sp.isNullOrEmpty(draftid) && sp.isNullOrEmpty(this.data.id)) {
+      this.$emit('open-watch');
+    }
   },
   mounted() {
     // 全屏显示
@@ -385,10 +389,10 @@ export default {
           }
           this.data.html_content = this.html;
           try {
-            await sp.post('api/post/save', this.data);
+            var id = await sp.post('api/post/save', this.data);
             this.$message.success('发布成功！');
             window.onbeforeunload = null;
-            this.$router.push({ name: 'post', params: { id: this.data.id } });
+            this.$router.push({ name: 'post', params: { id: id } });
           } catch (error) {
             this.$message.error(error);
           }

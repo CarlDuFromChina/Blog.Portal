@@ -11,7 +11,7 @@
               <div class="bodyWrapper-title">{{ data.name }}</div>
               <div id="content" v-show="!loading"></div>
             </a-card>
-            <sp-comment v-show="showComment" :object-id="id" :disabled="data.disable_comment" objectName="reading_note"></sp-comment>
+            <!-- <sp-comment v-show="showComment" :object-id="id" :disabled="data.disable_comment" objectName="reading_note"></sp-comment> -->
           </a-layout-sider>
           <a-layout-sider width="30%" style="margin-left:20px" theme="light">
             <a-card class="block">
@@ -71,11 +71,6 @@ export default {
     document.getElementById('content').innerHTML = this.data.content;
     this.user = await sp.get(`api/user_info/${this.data.created_by}`);
     this.imageUrl = `${sp.getServerUrl()}api/sys_file/download?objectId=13c5929e-cfca-406b-979b-d7a102a7ed10`;
-  },
-  computed: {
-    showComment() {
-      return this.$store.getters.getShowComment;
-    }
   },
   methods: {
     async loadData() {
