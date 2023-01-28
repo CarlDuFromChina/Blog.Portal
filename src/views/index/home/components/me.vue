@@ -14,7 +14,7 @@ export default {
   data() {
     return {
       showUser: true,
-      lifePhoto: require('../../../assets/images/pic_err.png'),
+      lifePhoto: require('../../../../assets/images/pic_err.png'),
       name: '',
       introduction: '',
       loading: true

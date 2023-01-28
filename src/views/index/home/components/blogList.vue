@@ -69,7 +69,7 @@ export default {
     getSurface(url) {
       var downloadUrl = sp.getDownloadUrl(url);
       if (sp.isNullOrEmpty(downloadUrl)) {
-        return require('../../../assets/images/pic_err.png');
+        return require('../../../../assets/images/pic_err.png');
       }
       return downloadUrl;
     },

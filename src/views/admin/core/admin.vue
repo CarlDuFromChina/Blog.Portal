@@ -37,11 +37,12 @@
         <!--用户头像-->
         <a-dropdown>
           <a-menu slot="overlay">
+            <a-menu-item key="0" @click="$router.push({ name: 'index' })"><a-icon type="home" />首页</a-menu-item>
             <a-menu-item key="1" @click="() => this.$router.push({ name: 'notification' })"
-              ><a-badge :dot="messageCount > 0"><a-icon type="notification" />消息</a-badge></a-menu-item
+              ><a-badge :dot="messageCount > 0"><a-icon type="notification" />消息通知</a-badge></a-menu-item
             >
-            <a-menu-item key="2" @click="() => (userInfoEditVisible = true)"><a-icon type="setting" />设置</a-menu-item>
-            <a-menu-item key="3" @click="logout"><a-icon type="logout" />退出</a-menu-item>
+            <a-menu-item key="2" @click="() => (userInfoEditVisible = true)"><a-icon type="setting" />我的设置</a-menu-item>
+            <a-menu-item key="3" @click="logout"><a-icon type="logout" />退出登录</a-menu-item>
           </a-menu>
           <a-badge :count="messageCount">
             <a-avatar :src="imageUrl" shape="circle" style="cursor: pointer" />
@@ -56,7 +57,7 @@
       </a-layout-content>
     </a-layout>
     <!--用户模态窗-->
-    <a-modal v-model="userInfoEditVisible" title="编辑" @ok="saveUserInfo" width="60%" okText="确认" cancelText="取消">
+    <a-modal v-model="userInfoEditVisible" title="我的设置" @ok="saveUserInfo" width="60%" okText="确认" cancelText="取消">
       <user-info-edit ref="userInfoEdit" :related-attr="userParam" @close="userInfoEditVisible = false"></user-info-edit>
     </a-modal>
   </a-layout>

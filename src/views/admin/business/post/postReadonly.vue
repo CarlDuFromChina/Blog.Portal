@@ -1,16 +1,11 @@
 <template>
   <div id="blog" class="blog blog__readonly">
     <blog-menu></blog-menu>
-    <div class="blog-body" style="background-color: #e9ecef">
+    <div class="blog-body">
       <div class="bodyWrapper">
         <a-layout>
           <!--左侧按钮：点赞、评论-->
           <a-layout-sider width="10%" theme="light" style="text-align: center">
-            <div class="toolbar" v-if="commentStrategy !== 'none'">
-              <div class="toolbar-item">
-                <a-icon type="message" @click="goCommentLocation"></a-icon>
-              </div>
-            </div>
           </a-layout-sider>
           <!--右侧内容-->
           <a-layout-sider width="60%" theme="light">
@@ -20,17 +15,16 @@
                 <div class="block">
                   <div class="bodyWrapper-title">{{ data.title }}</div>
                   <div style="display: flex">
-                    <a-avatar :src="getAvatar(data.created_by)" style="margin-right: 10px"></a-avatar>
                     <div>
-                      <a>{{ user.name }}</a>
-                      <div style="color: #72777b; font-size: 12px; padding-top: 5px">
+                      <div style="color: #72777b; font-size: 12px; padding-top: 5px; font-style: italic;">
+                        作者：{{ user.name }}
+                      </div>
+                      <div style="color: #72777b; font-size: 12px; padding-top: 5px; font-style: italic;">
                         最后修改时间：{{ data.updated_at | moment('YYYY-MM-DD HH:mm') }}
                       </div>
                     </div>
                   </div>
                 </div>
-                <!--封面图片-->
-                <img v-if="data.big_surface_url" :src="getDownloadUrl(data.big_surface_url)" class="bodyWrapper-background" />
                 <!--内容-->
                 <div id="blog_content" class="bodyWrapper-content">
                   <article v-highlight v-html="formatterContent" class="markdown-body" @click="handleImgClick($event)"></article>
@@ -39,7 +33,6 @@
             </a-card>
             <!--标准评论组件-->
             <sp-comments
-              id="comment"
               v-if="commentStrategy === 'default' && !data.disable_comment"
               :object-id="id"
               :data="data"
@@ -47,21 +40,20 @@
               objectName="blog"
             ></sp-comments>
             <!--disqus评论组件-->
-            <div id="comment">
-              <Disqus
-                :shortname="disqusShortName"
-                lang="zh-CN"
-                v-if="commentStrategy === 'disqus' && !data.disable_comment"
-                :style="{ marginTop: '32px'}"
-              >
-              </Disqus>
-            </div>
+            <Disqus
+              :shortname="disqusShortName"
+              lang="zh-CN"
+              v-if="commentStrategy === 'disqus' && !data.disable_comment"
+              :style="{ marginTop: '32px'}"
+            >
+            </Disqus>
           </a-layout-sider>
           <!--右侧目录栏-->
-          <a-layout-sider width="30%" style="margin-left: 20px" theme="light">
-            <div id="content" class="block catalog">
-              <div style="font-size: 16px">目录</div>
-            </div>
+          <a-layout-sider width="20%" style="margin-left: 20px" theme="light">
+            <sp-card id="catalog" :loading="false" class="catalog">
+              <div slot="title" class="title">目录</div>
+              <div id="content" class="block"></div>
+            </sp-card>
           </a-layout-sider>
         </a-layout>
       </div>
@@ -88,6 +80,7 @@ import blogMenu from '../../../index/blogMenu.vue';
 import { Disqus } from 'vue-disqus';
 const marked = require('marked');
 
+// 修改 header 标签的渲染器
 const renderer = new marked.Renderer();
 renderer.heading = function (text, level) {
   const anchor = tocObj.add(text, level);
@@ -113,7 +106,7 @@ const tocObj = {
       result += '</ul>\n';
     };
     const addLI = (anchor, text) => {
-      result += '<li class="content-item" @click="goAnchor(\'' + anchor + '\')"><a href="javascript:void(0)">' + text + '</a></li>\n';
+      result += `<li class="content-item" @click="goAnchor('${anchor}')"><a href="javascript:void(0)">${text}</a></li>\n`;
     };
     this.toc.forEach(function (item) {
       let levelIndex = levelStack.indexOf(item.level);
@@ -226,24 +219,21 @@ export default {
     getBlogEl() {
       return document.getElementById('blog');
     },
-    goCommentLocation() {
-      document.getElementById('comment').scrollIntoView();
-    },
     handleScroll() {
-      const content = document.getElementById('content');
+      const catalogVM = document.getElementById('catalog');
       const blog = document.getElementById('blog');
       if (this.height > blog.scrollTop) {
-        content.style.position = 'relative';
-        content.style.marginTop = 20;
+        catalogVM.style.position = 'relative';
+        catalogVM.style.marginTop = 20;
       } else {
-        content.style.position = 'sticky';
-        content.style.top = '0';
-        content.style.marginTop = 0;
+        catalogVM.style.position = 'sticky';
+        catalogVM.style.top = '0';
+        catalogVM.style.marginTop = 0;
       }
     },
     handleLinkClick() {
-      const content = document.getElementById('blog_content');
-      const nodes = content.getElementsByTagName('a');
+      const contentVM = document.getElementById('blog_content');
+      const nodes = contentVM.getElementsByTagName('a');
       for (const node of nodes) {
         node.target = '_blank';
       }
@@ -256,6 +246,7 @@ export default {
         setTimeout(() => {
           this.loading = false;
           this.$nextTick(() => {
+            // 内容里的链接打开新的Tab
             this.handleLinkClick();
           });
         }, 200);
@@ -290,13 +281,6 @@ export default {
           font-weight: 600;
           color: #000000d9;
         }
-        &-background {
-          max-width: 100%;
-          max-width: 100%;
-          width: 100%;
-          height: 100%;
-          margin-bottom: 20px;
-        }
         .bodyWrapper-content {
           height: 100%;
           min-height: 1000px;
@@ -309,14 +293,24 @@ export default {
   }
 }
 
+.title {
+  color: #1d2129;
+  font-size: 16px;
+  border-bottom: 1px solid #e4e6eb;
+  text-transform: uppercase;
+  padding-bottom: 8px;
+}
+
+.catalog {
+  padding-top: 8px;
+  position: sticky;
+}
+
 .block {
   width: 100%;
-  margin-bottom: 20px;
+  margin-bottom: 56px;
   border-radius: 6px;
 
-  .catalog {
-    position: sticky;
-  }
 
   /deep/ .ant-card-body {
     padding: 0px;
@@ -350,8 +344,13 @@ export default {
 }
 
 /deep/ .block {
+  > ul {
+    list-style: none;
+    padding-left: 0px;
+  }
   .content-item {
     color: #000000;
+    padding: 8px 0;
     &:hover {
       color: #007fff;
     }

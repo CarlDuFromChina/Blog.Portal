@@ -7,6 +7,7 @@ export default [
   {
     path: '/admin',
     name: 'admin',
+    redirect: '/admin/workplace',
     component: myAdmin,
     children: [].concat(business, core, result),
     meta: { auth: true } // 需要检验

@@ -30,6 +30,7 @@ export default {
 <style lang="less" scoped>
 .menu-item {
   float: left;
+  font-weight: bold;
   line-height: 48px;
   padding: 0 20px;
   border-bottom: 2px solid transparent;

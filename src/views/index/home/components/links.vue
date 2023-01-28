@@ -45,5 +45,5 @@ export default {
 </script>
 
 <style lang="less" scoped>
-@import url('./card');
+@import url('./card.less');
 </style>

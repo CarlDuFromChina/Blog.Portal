@@ -38,17 +38,12 @@
 </template>
 
 <script>
-import recommandList from './recommandList';
-import links from './links';
-import idea from './idea';
-import blogList from './blogList';
-import seriesList from './seriesList.vue';
-import me from './me.vue';
+import { RecommandList, Links, Idea, BlogList, SeriesList, Me } from './components'
 import packageConfig from '../../../../package.json';
 
 export default {
   name: 'home',
-  components: { recommandList, links, idea, blogList, seriesList, me },
+  components: { RecommandList, Links, Idea, BlogList, SeriesList, Me },
   data() {
     return {
       loading: 'false',
