@@ -16,10 +16,10 @@
                   <div class="bodyWrapper-title">{{ data.title }}</div>
                   <div style="display: flex">
                     <div>
-                      <div style="color: #72777b; font-size: 12px; padding-top: 5px; font-style: italic;">
+                      <div style="color: #72777b; font-size: 14px; padding-top: 5px; font-style: italic;">
                         作者：{{ user.name }}
                       </div>
-                      <div style="color: #72777b; font-size: 12px; padding-top: 5px; font-style: italic;">
+                      <div style="color: #72777b; font-size: 14px; padding-top: 5px; font-style: italic;">
                         最后修改时间：{{ data.updated_at | moment('YYYY-MM-DD HH:mm') }}
                       </div>
                     </div>
@@ -53,6 +53,7 @@
             <sp-card id="catalog" :loading="false" class="catalog">
               <div slot="title" class="title">目录</div>
               <div id="content" class="block"></div>
+              <a-empty slot="empty" :empty="isCatagoryEmpty" :description="false" />
             </sp-card>
           </a-layout-sider>
         </a-layout>
@@ -106,7 +107,7 @@ const tocObj = {
       result += '</ul>\n';
     };
     const addLI = (anchor, text) => {
-      result += `<li class="content-item" @click="goAnchor('${anchor}')"><a href="javascript:void(0)">${text}</a></li>\n`;
+      result += `<li class="content-item" @click="goAnchor('${anchor}')"><a id="catalog-${anchor}" href="javascript:void(0)">${text}</a></li>\n`;
     };
     this.toc.forEach(function (item) {
       let levelIndex = levelStack.indexOf(item.level);
@@ -133,8 +134,8 @@ const tocObj = {
       addEndUL();
     }
     // 清理先前数据供下次使用
-    this.toc = [];
-    this.index = 0;
+    // this.toc = [];
+    // this.index = 0;
     return result;
   },
   toc: [],
@@ -165,10 +166,56 @@ export default {
   async created() {
     await this.loadData();
     this.user = await sp.get(`api/user_info/${this.data.created_by}`);
-    this.commentStrategy = await sp.get('api/comments/comment_strategy')
+    this.commentStrategy = await sp.get('api/comments/comment_strategy');
+  },
+  computed: {
+    isCatagoryEmpty() {
+      return tocObj.toc.length === 0;
+    }
   },
   mounted() {
-    document.getElementById('blog').addEventListener('scroll', this.handleScroll);
+    var blogVM = document.getElementById('blog');
+
+    blogVM.addEventListener('scroll', function() {
+      // 吸住目录
+      const catalogVM = document.getElementById('catalog');
+      if (this.height > this.scrollTop) {
+        catalogVM.style.position = 'relative';
+        catalogVM.style.marginTop = 20;
+      } else {
+        catalogVM.style.position = 'sticky';
+        catalogVM.style.top = '0';
+        catalogVM.style.marginTop = 0;
+      }
+
+      for (let i = 0; i < tocObj.toc.length; i++) {
+        const item = tocObj.toc[i];
+        const next = i + 1 === tocObj.toc.length ? null : tocObj.toc[i + 1];
+        var el = document.getElementById(item.anchor);
+        var nextEl = document.getElementById(next?.anchor);
+        var removeStatus = () => {
+          for (let j = 0; j < tocObj.toc.length; j++) {
+            if (i !== j) {
+              document.getElementById(`catalog-${tocObj.toc[j].anchor}`).className = '';
+            }
+          }
+        }
+
+        // 当前滚动距离小于第一个标题
+        if (i === 0 && this.scrollTop < el.offsetTop) {
+          document.getElementById(`catalog-${item.anchor}`).className = 'active';
+          removeStatus();
+          break;
+        }
+
+        // 当前滚动距离大于这个标题但是还在这个标题范围之中 || 最后一个标题
+        if (this.scrollTop > el.offsetTop && (sp.isNil(nextEl) || this.scrollTop < nextEl.offsetTop)) {
+          document.getElementById(`catalog-${item.anchor}`).className = 'active';
+          removeStatus();
+          break;
+        }
+      }
+    });
   },
   watch: {
     'data.content': {
@@ -218,18 +265,6 @@ export default {
     },
     getBlogEl() {
       return document.getElementById('blog');
-    },
-    handleScroll() {
-      const catalogVM = document.getElementById('catalog');
-      const blog = document.getElementById('blog');
-      if (this.height > blog.scrollTop) {
-        catalogVM.style.position = 'relative';
-        catalogVM.style.marginTop = 20;
-      } else {
-        catalogVM.style.position = 'sticky';
-        catalogVM.style.top = '0';
-        catalogVM.style.marginTop = 0;
-      }
     },
     handleLinkClick() {
       const contentVM = document.getElementById('blog_content');
@@ -344,8 +379,11 @@ export default {
 }
 
 /deep/ .block {
-  > ul {
+  ul {
     list-style: none;
+    padding-left: 20px;
+  }
+  > ul {
     padding-left: 0px;
   }
   .content-item {

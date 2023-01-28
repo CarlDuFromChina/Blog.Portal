@@ -5,7 +5,9 @@
         <h3 v-if="title">{{ title }}</h3>
       </slot>
       <slot></slot>
-      <a-empty v-if="empty" />
+      <slot name="empty">
+        <a-empty v-if="empty" />
+      </slot>
     </a-skeleton>
   </div>
 </template>
@@ -22,6 +24,10 @@ export default {
       default: false
     },
     loading: {
+      type: Boolean,
+      default: true
+    },
+    showEmptyDescription: {
       type: Boolean,
       default: true
     }
