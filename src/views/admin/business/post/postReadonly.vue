@@ -53,7 +53,7 @@
             <sp-card id="catalog" :loading="false" class="catalog">
               <div slot="title" class="title">目录</div>
               <div id="content" class="block"></div>
-              <a-empty slot="empty" :empty="isCatagoryEmpty" :description="false" />
+              <a-empty slot="empty" v-if="isCatagoryEmpty" :description="false" />
             </sp-card>
           </a-layout-sider>
         </a-layout>
@@ -160,18 +160,14 @@ export default {
       previewImage: '',
       previewVisible: false,
       disqusShortName: process.env.VUE_APP_DISQUS_SHORTNAME,
-      commentStrategy: 'default'
+      commentStrategy: 'default',
+      isCatagoryEmpty: false
     };
   },
   async created() {
     await this.loadData();
     this.user = await sp.get(`api/user_info/${this.data.created_by}`);
     this.commentStrategy = await sp.get('api/comments/comment_strategy');
-  },
-  computed: {
-    isCatagoryEmpty() {
-      return tocObj.toc.length === 0;
-    }
   },
   mounted() {
     var blogVM = document.getElementById('blog');
@@ -251,6 +247,8 @@ export default {
           const component = new MyComponent().$mount();
           content.appendChild(component.$el);
           this.height = content.offsetTop;
+          debugger;
+          this.isCatagoryEmpty = tocObj.toc.length === 0;
         }
       }
     }
