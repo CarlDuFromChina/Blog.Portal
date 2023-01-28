@@ -186,7 +186,7 @@ export default {
             .then(resp => {
               if (resp.result) {
                 saveAuth(this.$store, resp);
-                that.$router.push({ name: 'index' });
+                that.$router.push({ name: 'admin' });
                 that.$message.success(resp.message);
               } else {
                 this.isLoginFailed = true;

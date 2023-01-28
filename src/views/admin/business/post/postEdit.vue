@@ -194,7 +194,8 @@ export default {
       tags: [],
       data: {
         is_series: false,
-        disable_comment: false
+        disable_comment: false,
+        content: ''
       },
       token: this.$store.getters.getToken,
       rules: {
@@ -206,7 +207,11 @@ export default {
   },
   async created() {
     this.$on('open-watch', () => {
-      this.unwatch = this.$watch('data', () => {
+      this.unwatch = this.$watch('data.content', (v1, v2) => {
+          if (v1 === v2) {
+            return;
+          }
+
           // 倒计时保存草稿
           if (!this.isDirty) {
             this.isDirty = true;
@@ -223,9 +228,6 @@ export default {
               }
             }, 1000);
           }
-        },
-        {
-          deep: true
         }
       );
     });
@@ -242,7 +244,7 @@ export default {
     }
 
     if (sp.isNullOrEmpty(draftid) && sp.isNullOrEmpty(this.data.id)) {
-      this.$emit('open-watch');
+      this.$nextTick(() => this.$emit('open-watch'));
     }
   },
   mounted() {

@@ -9,7 +9,7 @@
     <!-- 悬浮菜单 -->
     <div class="hover-menu">
       <div class="button-box">
-        <a-button size="large" icon="home" shape="circle" class="green-btn" @click="$router.push({ name: 'index' })"></a-button>
+        <a-button size="large" icon="home" shape="circle" class="green-btn" @click="goIndex"></a-button>
       </div>
       <div class="button-box">
         <a-dropdown>
@@ -57,9 +57,8 @@ export default {
       }
     },
     goIndex() {
-      this.$router.push({
-        name: 'index'
-      });
+      var route = this.$router.resolve({ name: 'index' });
+      window.open(route.href, '_blank');
     },
     openExternalLink(name) {
       if (this.sites[name])
