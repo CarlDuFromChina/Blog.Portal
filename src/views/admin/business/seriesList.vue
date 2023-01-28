@@ -4,7 +4,6 @@
     :controller-name="controllerName"
     :operations="operations"
     :columns="columns"
-    :edit-component="editComponent"
     :headerClick="goEdit"
     :customApi="customApi"
   >
@@ -25,14 +24,11 @@
 </template>
 
 <script>
-import postEdit from '../post/postEdit';
-
 export default {
   name: 'series-list',
   data() {
     return {
       controllerName: 'post',
-      editComponent: postEdit,
       operations: ['new', 'delete', 'search', 'more'],
       columns: [
         { prop: 'title', label: '标题' },
@@ -83,11 +79,9 @@ export default {
       window.open(href, '_blank');
     },
     goEdit(item) {
-      this.$router.push({
-        name: `postEdit`,
-        params: { id: item?.id }
-      });
-    }
+      var router = this.$router.resolve(`/admin/editor/post/${(item || {}).id || ''}`);
+      window.open(router.href, '_blank')
+    },
   }
 };
 </script>

@@ -1,29 +1,31 @@
 <template>
-  <a-spin :spinning="loading" style="height: 100%;overflow-y: auto">
-    <sp-header>
-      <div style="display: inline-block;padding-right:10px;">
-        <a-button icon="check" type="primary" @click="saveData" :loading="loading" style="margin-right:10px">提交</a-button>
-        <a-button icon="left" @click="$router.back()">返回</a-button>
-      </div>
-    </sp-header>
-    <a-form-model ref="form" :model="data" style="padding:0 20px;">
-      <a-row type="flex" justify="space-between">
-        <a-col :span="4">
+  <div>
+    <sp-editor
+      ref="editor"
+      v-model="data.content"
+      :uploadImgParams="uploadImgParams"
+      :disabledMenu="['image', 'video']"
+      :preCreate="preCreate"
+      @save-data="showEditModal"
+    ></sp-editor>
+    <a-modal title="编辑" v-model="saveModalVisible" @ok="saveData">
+      <a-form-model ref="form" :model="data" style="padding: 0 20px">
+        <a-row>
           <a-form-model-item label="书名">
             <a-input v-model="data.book_title"></a-input>
           </a-form-model-item>
-        </a-col>
-        <a-col :span="4">
+        </a-row>
+        <a-row>
           <a-form-model-item label="是否前台显示">
             <a-switch v-model="data.is_show"></a-switch>
           </a-form-model-item>
-        </a-col>
-        <a-col :span="4">
+        </a-row>
+        <a-row>
           <a-form-model-item label="禁止评论">
             <a-switch v-model="data.disable_comment"></a-switch>
           </a-form-model-item>
-        </a-col>
-        <a-col :span="4">
+        </a-row>
+        <a-row>
           <a-form-model-item label="封面">
             <a-upload
               :action="baseUrl"
@@ -37,23 +39,11 @@
               <a-button type="primary" @click="openCloudUpload" icon="upload">上传</a-button>
             </a-upload>
           </a-form-model-item>
-        </a-col>
-      </a-row>
-      <a-row>
-        <a-col>
-          <a-form-model-item label="内容">
-            <sp-editor
-              v-model="data.content"
-              :uploadImgParams="uploadImgParams"
-              :disabledMenu="['image', 'video']"
-              :preCreate="preCreate"
-            ></sp-editor>
-          </a-form-model-item>
-        </a-col>
-      </a-row>
-    </a-form-model>
+        </a-row>
+      </a-form-model>
+    </a-modal>
     <cloud-upload ref="cloudUpload" @selected="selected"></cloud-upload>
-  </a-spin>
+  </div>
 </template>
 
 <script>
@@ -67,16 +57,12 @@ export default {
       controllerName: 'reading_note',
       baseUrl: sp.getServerUrl(),
       fileList: [],
+      saveModalVisible: false,
       data: {
         is_show: false,
         disable_comment: false
       }
     };
-  },
-  created() {
-    this.$on('close', () => {
-      this.$router.back();
-    });
   },
   computed: {
     uploadImgParams() {
@@ -85,6 +71,9 @@ export default {
         objectId: this.data.id
       };
     }
+  },
+  mounted() {
+    this.$refs.editor.editor.fullScreen();
   },
   methods: {
     preCreate(editor) {
@@ -137,6 +126,12 @@ export default {
     },
     getText(str) {
       return str.replace(/<[^<>]+>/g, '').replace(/&nbsp;/gi, '');
+    },
+    showEditModal() {
+      this.saveModalVisible = true;
+    },
+    postSave() {
+      this.$router.push({ name: 'readingNote', params: { id: this.data.id } });
     }
   }
 };

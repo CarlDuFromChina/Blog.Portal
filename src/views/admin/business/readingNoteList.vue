@@ -3,20 +3,16 @@
     :controller-name="controllerName"
     :operations="operations"
     :columns="columns"
-    :edit-component="editComponent"
     :headerClick="goEdit"
   ></sp-list>
 </template>
 
 <script>
-import readingNoteEdit from './readingNoteEdit';
-
 export default {
   name: 'readingNoteList',
   data() {
     return {
       controllerName: 'reading_note',
-      editComponent: readingNoteEdit,
       operations: ['new', 'delete', 'search'],
       columns: [
         { prop: 'book_title', label: '标题' },
@@ -29,16 +25,15 @@ export default {
   },
   methods: {
     goEdit(item) {
-      this.$router.push({
+      const { href } = this.$router.resolve({
         name: 'readingNoteEdit',
-        params: {
-          id: item.id
-        }
+        params: { id: item.id }
       });
+      window.open(href, '_blank');
     },
     goReadonly(item) {
       const { href } = this.$router.resolve({
-        name: 'readingNoteReadonly',
+        name: 'readingNote',
         params: { id: item.id }
       });
       window.open(href, '_blank');

@@ -6,7 +6,7 @@
 import linkEdit from './linkEdit';
 
 export default {
-  name: 'ideaList',
+  name: 'link-list',
   data() {
     return {
       controllerName: 'link',

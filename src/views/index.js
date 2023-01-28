@@ -6,11 +6,11 @@ export default [
   {
     path: '/post/:id',
     name: 'post',
-    component: () => import('./admin/business/post/postReadonly')
+    component: () => import('./post.vue')
   },
   {
-    path: '/readingNote/:id',
-    name: 'readingNoteReadonly',
-    component: () => import('./admin/business/readingNote/readingNoteReadonly')
+    path: '/reading-note/:id',
+    name: 'readingNote',
+    component: () => import('./readingNote.vue')
   }
 ].concat(index, login, admin);

@@ -77,7 +77,6 @@
 <script>
 import Vue from 'vue';
 import 'highlight.js/styles/atom-one-dark.css';
-import blogMenu from '../../../index/blogMenu.vue';
 import { Disqus } from 'vue-disqus';
 const marked = require('marked');
 
@@ -144,7 +143,7 @@ const tocObj = {
 
 export default {
   name: 'post',
-  components: { blogMenu, Disqus },
+  components: { Disqus },
   data() {
     return {
       id: this.$route.params.id,

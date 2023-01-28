@@ -8,6 +8,26 @@
 </template>
 
 <script>
+const Vue = require('vue').default;
+const E = require('wangeditor');
+const { BtnMenu } = E;
+
+class SaveMenu extends BtnMenu {
+  constructor(editor) {
+    const MyComponent = Vue.extend({
+      template: `<div class="w-e-menu"><a-icon type="save" style="color: #999"/></div>`,
+    });
+    const component = new MyComponent().$mount();
+    var o = document.createElement("div");
+    o.appendChild(component.$el);
+    super(E.$(o.innerHTML), editor);
+  }
+
+  clickHandler() {
+    this.editor.save();
+  }
+}
+
 export default {
   name: 'sp-editor',
   props: {
@@ -57,7 +77,6 @@ export default {
     }
   },
   mounted() {
-    const E = require('wangeditor');
     this.editor = new E(this.$refs.editor);
     this.editor.config.onchange = html => {
       this.$emit('input', html);
@@ -76,7 +95,7 @@ export default {
     this.editor.config.uploadImgMaxLength = 1; // 最多一次上传一张照片
     this.editor.config.uploadImgServer = `${sp.getServerUrl()}api/sys_file/upload_image`; // 上传图片服务地址
     this.editor.config.uploadImgHooks = {
-      customInsert: function(insertImgFn, result) {
+      customInsert: function (insertImgFn, result) {
         insertImgFn(sp.getDownloadUrl(result.downloadUrl));
       }
     };
@@ -86,9 +105,17 @@ export default {
         this.$emit('input', html);
       }
     };
+    this.editor.menus.extend('saveMenu', SaveMenu);
+    this.editor.config.menus = this.editor.config.menus.concat('saveMenu');
+    this.editor.config.zIndex = 100;
+    this.editor.save = () => this.$emit('save-data');
     this.editor.create();
   }
 };
 </script>
 
-<style></style>
+<style lang="less" scoped>
+.w-e-full-screen-editor {
+  z-index: 100 !important;
+}
+</style>

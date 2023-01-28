@@ -4,7 +4,6 @@
     :controller-name="controllerName"
     :operations="operations"
     :columns="columns"
-    :edit-component="editComponent"
     :headerClick="goEdit"
     :searchList="searchList"
     :exportData="exportData"
@@ -35,14 +34,12 @@
 </template>
 
 <script>
-import postEdit from './postEdit';
 
 export default {
-  name: 'blog-list',
+  name: 'post-list',
   data() {
     return {
       controllerName: 'post',
-      editComponent: postEdit,
       operations: ['new', 'delete', 'search', 'more', 'export'],
       columns: [
         { prop: 'title', label: '标题' },

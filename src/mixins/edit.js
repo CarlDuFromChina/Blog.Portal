@@ -69,7 +69,7 @@ export default {
           const operateName = sp.isNullOrEmpty(this.data.id) ? 'CreateData' : 'UpdateData';
           try {
             if (operateName === 'CreateData') {
-              await sp.post(`api/${this.controllerName}`, this.data);
+              this.data.id = await sp.post(`api/${this.controllerName}`, this.data);
             } else {
               await sp.put(`api/${this.controllerName}`, this.data);
             }

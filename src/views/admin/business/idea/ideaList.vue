@@ -36,6 +36,7 @@ import { pagination } from '@/mixins';
 import ideaEdit from './ideaEdit.vue';
 
 export default {
+  name: 'idea-list',
   directives: { infiniteScroll },
   components: { ideaEdit },
   mixins: [pagination],

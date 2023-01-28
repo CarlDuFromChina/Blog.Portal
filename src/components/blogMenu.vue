@@ -19,6 +19,7 @@
 
 <script>
 export default {
+  name: 'blog-menu',
   data() {
     return {
       menus: [

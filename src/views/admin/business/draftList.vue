@@ -19,7 +19,7 @@ export default {
   methods: {
     goEdit(item) {
       var router = this.$router.resolve({
-        name: 'draft',
+        name: 'draftEdit',
         params: {
           draftId: item.id
         }

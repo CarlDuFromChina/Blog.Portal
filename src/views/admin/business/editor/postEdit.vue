@@ -9,7 +9,7 @@
             :toolbars="toolbar"
             @imgAdd="imgAdd"
             @change="change"
-            @save="editVisible = true"
+            @save="saveData"
           >
             <!-- 左工具栏前加入自定义按钮 -->
             <template slot="right-toolbar-before">
@@ -47,7 +47,7 @@
         </div>
       </div>
     </div>
-    <a-modal title="发布文章" v-model="editVisible" @ok="editVisible = false">
+    <a-modal title="发布文章" v-model="publishModalVisible" @ok="savePost">
       <a-form-model ref="form" :model="data" :rules="rules">
         <a-row>
           <a-col>
@@ -135,8 +135,8 @@
         </a-row>
       </a-form-model>
       <span slot="footer" class="dialog-footer">
-        <a-button @click="editVisible = false">取 消</a-button>
-        <a-button type="primary" @click="save" :loading="loading">确 定</a-button>
+        <a-button @click="publishModalVisible = false">取 消</a-button>
+        <a-button type="primary" @click="savePost" :loading="loading">确 定</a-button>
       </span>
     </a-modal>
     <cloud-upload ref="cloudUpload" @selected="selected"></cloud-upload>
@@ -185,7 +185,7 @@ export default {
       ],
       html: '',
       configs: {},
-      editVisible: false,
+      publishModalVisible: false,
       controllerName: 'post',
       selectParamNameList: ['article_type'],
       selectEntityNameList: ['category'],
@@ -381,11 +381,19 @@ export default {
     change(value, render) {
       this.html = render; // render 为 markdown 解析后的结果[html]
     },
+    saveData() {
+      // 草稿编辑保存
+      if (this.$route.params.draftId) {
+        this.saveDraft();
+      } else {
+        this.publishModalVisible = true;
+      }
+    },
     // 保存博客
-    save() {
+    savePost() {
       this.$refs.form.validate(async valid => {
         if (valid) {
-          this.editVisible = false;
+          this.publishModalVisible = false;
           if (sp.isNullOrEmpty(this.data.brief)) {
             this.data.brief = htmlToText(this.html, { baseElement: 'p', limits: { ellipsis: '...', maxInputLength: 200 } });
           }
@@ -475,9 +483,11 @@ export default {
           this.saveStatusValue = 'success';
           this.isDirty = false;
           this.draft.id = resp;
+          this.$message.success('保存成功');
         })
         .catch(() => {
           this.saveStatusValue = 'fail';
+          this.$message.error('保存失败')
         })
         .finally(() => {
           this.seconds = 60;
@@ -489,7 +499,25 @@ export default {
 </script>
 
 <style lang="less" scoped>
-@import 'post.less';
+.blog {
+  height: 100%;
+  &.blog__edit {
+    .blog-body {
+      color: #212529;
+      height: calc(100% - 60px);
+      .blog-bodywrapper {
+        height: 100%;
+        .blog-bodywrapper-markdown {
+          height: 100%;
+          .v-note-wrapper {
+            height: 100%;
+          }
+        }
+      }
+    }
+  }
+}
+
 /deep/ .v-note-wrapper.fullscreen {
   z-index: 100;
 }

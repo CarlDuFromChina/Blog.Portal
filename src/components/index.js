@@ -16,6 +16,7 @@ import spComments from './spComments';
 import spCard from './spCard';
 import spLogin from './spLogin';
 import cloudUpload from './cloudUploadDialog';
+import blogMenu from './blogMenu';
 
 const components = [
   { name: register.name, component: register },
@@ -34,7 +35,8 @@ const components = [
   { name: spComments.name, component: spComments },
   { name: spCard.name, component: spCard },
   { name: spLogin.name, component: spLogin },
-  { name: cloudUpload.name, component: cloudUpload }
+  { name: cloudUpload.name, component: cloudUpload },
+  { name: blogMenu.name, component: blogMenu }
 ];
 
 const install = _Vue => {

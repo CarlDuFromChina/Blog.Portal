@@ -48,7 +48,7 @@ export default {
   methods: {
     handleReadClick(item) {
       const { href } = this.$router.resolve({
-        name: 'readingNoteReadonly',
+        name: 'readingNote',
         params: { id: item.id }
       });
       window.open(href, '_blank');

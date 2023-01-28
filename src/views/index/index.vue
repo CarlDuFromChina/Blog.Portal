@@ -20,12 +20,10 @@
 
 <script>
 import infiniteScroll from 'vue-infinite-scroll';
-import blogMenu from './blogMenu.vue';
 
 export default {
   name: 'index',
   directives: { infiniteScroll },
-  components: { blogMenu },
   data() {
     return {
       bottom: 100,
