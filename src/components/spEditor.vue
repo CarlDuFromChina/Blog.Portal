@@ -26,6 +26,10 @@ class SaveMenu extends BtnMenu {
   clickHandler() {
     this.editor.save();
   }
+
+  tryChangeActive() {
+    this.active();
+  }
 }
 
 export default {
