@@ -8,8 +8,8 @@
 </template>
 
 <script>
-const Vue = require('vue').default;
-const E = require('wangeditor');
+import Vue from 'vue';
+import E from 'wangeditor';
 const { BtnMenu } = E;
 
 class SaveMenu extends BtnMenu {
