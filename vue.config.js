@@ -13,24 +13,18 @@ const cdn = {
   js: [
     'https://gcore.jsdelivr.net/npm/moment@2.29.1/moment.min.js',
     'https://gcore.jsdelivr.net/npm/marked@2.1.3/marked.min.js',
-    'https://gcore.jsdelivr.net/npm/echarts@5.3.1/dist/echarts.min.js',
-    'https://gcore.jsdelivr.net/npm/wangeditor@4.7.8/dist/wangEditor.min.js',
     'https://gcore.jsdelivr.net/npm/vue@2.6.14/dist/vue.min.js',
     'https://gcore.jsdelivr.net/npm/vue-router@3.5.3/dist/vue-router.min.js',
     'https://gcore.jsdelivr.net/npm/vuex@3.6.2/dist/vuex.min.js',
     'https://gcore.jsdelivr.net/npm/ant-design-vue@1.7.8/dist/antd.min.js',
-    'https://gcore.jsdelivr.net/npm/mavon-editor@2.10.4/dist/mavon-editor.min.js',
   ],
   externals: {
     moment: 'moment',
     marked: 'marked',
-    echarts: 'echarts',
-    wangeditor: 'wangEditor',
     vue: 'Vue',
     'vue-router': 'VueRouter',
     'vuex':'Vuex',
     'ant-design-vue': 'antd',
-    'mavon-editor': 'MavonEditor',
   }
 };
 

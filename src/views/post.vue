@@ -17,7 +17,7 @@
                   <div style="display: flex">
                     <div>
                       <div style="color: #72777b; font-size: 14px; padding-top: 5px; font-style: italic;">
-                        作者：{{ user.name }}
+                        作者：{{ data.created_by_name }}
                       </div>
                       <div style="color: #72777b; font-size: 14px; padding-top: 5px; font-style: italic;">
                         最后修改时间：{{ data.updated_at | moment('YYYY-MM-DD HH:mm') }}
@@ -31,19 +31,11 @@
                 </div>
               </a-skeleton>
             </a-card>
-            <!--标准评论组件-->
-            <sp-comments
-              v-if="commentStrategy === 'default' && !data.disable_comment"
-              :object-id="id"
-              :data="data"
-              :disabled="data.disable_comment"
-              objectName="blog"
-            ></sp-comments>
             <!--disqus评论组件-->
             <Disqus
               :shortname="disqusShortName"
               lang="zh-CN"
-              v-if="commentStrategy === 'disqus' && !data.disable_comment"
+              v-if="!data.disable_comment"
               :style="{ marginTop: '32px'}"
             >
             </Disqus>
@@ -151,22 +143,17 @@ export default {
       data: {},
       loading: false,
       formatterContent: '',
-      user: {},
       height: null,
       isUp: false,
       getDownloadUrl: sp.getDownloadUrl,
-      getAvatar: sp.getAvatar,
       previewImage: '',
       previewVisible: false,
       disqusShortName: process.env.VUE_APP_DISQUS_SHORTNAME,
-      commentStrategy: 'default',
       isCatagoryEmpty: false
     };
   },
   async created() {
     await this.loadData();
-    this.user = await sp.get(`api/user_info/${this.data.created_by}`);
-    this.commentStrategy = await sp.get('api/comments/comment_strategy');
   },
   mounted() {
     var blogVM = document.getElementById('blog');
@@ -246,7 +233,6 @@ export default {
           const component = new MyComponent().$mount();
           content.appendChild(component.$el);
           this.height = content.offsetTop;
-          debugger;
           this.isCatagoryEmpty = tocObj.toc.length === 0;
         }
       }

@@ -1,4 +1,3 @@
-import store from '../store';
 import axios from 'axios';
 
 function getServerUrl() {
@@ -17,19 +16,6 @@ function getDownloadUrl(value, isUrl = true) {
   return `${getServerUrl()}${url}`;
 }
 
-function getAvatar(id) {
-  id = id || getUserId();
-  if (sp.isNullOrEmpty(id)) {
-    var avatar = require('../assets/images/avatar.png');
-    return avatar;
-  }
-  return `${getServerUrl()}api/system/avatar/${id}`;
-}
-
-function getUserId() {
-  return store.getters.getUserId;
-}
-
 function isTrue(val) {
   return val === 'true' || val === true;
 }
@@ -37,7 +23,5 @@ function isTrue(val) {
 export default {
   getServerUrl,
   getDownloadUrl,
-  getAvatar,
-  getUserId,
   isTrue
 };

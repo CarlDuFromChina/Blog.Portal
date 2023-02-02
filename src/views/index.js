@@ -1,6 +1,4 @@
 import index from './index/index.js';
-import login from './login';
-import admin from './admin';
 
 export default [
   {
@@ -13,4 +11,4 @@ export default [
     name: 'readingNote',
     component: () => import('./readingNote.vue')
   }
-].concat(index, login, admin);
+].concat(index);

@@ -3,11 +3,8 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 import Antd from 'ant-design-vue';
 import router from './router';
-import store from './store';
 import moment from 'moment';
 import './lib/zh-cn';
-import mavonEditor from 'mavon-editor';
-import 'mavon-editor/dist/css/index.css';
 import 'ant-design-vue/dist/antd.css';
 import './lib';
 import './components';
@@ -20,7 +17,6 @@ Vue.config.productionTip = false;
 Vue.use(Antd);
 Vue.use(moment);
 Vue.use(Vuex);
-Vue.use(mavonEditor);
 
 Vue.prototype.$bus = new Vue();
 Vue.filter('moment', (data, formatStr) => (sp.isNullOrEmpty(data) ? '' : moment(data).format(formatStr)));
@@ -35,7 +31,6 @@ if (window.device.mobile()) {
   new Vue({
     el: '#app',
     router,
-    store,
     components: { App },
     template: '<App/>'
   });
