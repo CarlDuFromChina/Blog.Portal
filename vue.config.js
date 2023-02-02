@@ -30,6 +30,7 @@ const cdn = {
 
 module.exports = {
   runtimeCompiler: true,
+  lintOnSave: false,
   pluginOptions: {
     'style-resources-loader': {
       preProcessor: 'less',
