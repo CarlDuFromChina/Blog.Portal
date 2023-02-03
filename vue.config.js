@@ -45,6 +45,11 @@ module.exports = {
       filename: '[name].[hash].js'
     },
     externals: isProd ? cdn.externals : [],
+    resolve: {
+      alias: {
+        '@': resolve('src')
+      }
+    },
     plugins: [
       new CompressionPlugin({
         test:/\.js$|\.html$|.\css/, //匹配文件名
